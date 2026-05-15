@@ -318,7 +318,8 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
         if ".layers." in key:
             parts = key.split(".")
             layer_idx = parts.index("layers")
-            layer_prefix = ".".join(parts[:layer_idx + 2]) + "."
+            # Keep prefix up to "...layers." and append numeric index later.
+            layer_prefix = ".".join(parts[:layer_idx + 1]) + "."
             break
     
     if layer_prefix is None:
@@ -367,7 +368,7 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
     # Extract per-layer weights
     layer_weights = []
     for i in range(num_layers):
-        p = f"{layer_prefix.rstrip('.')}.{i}."
+        p = f"{layer_prefix}{i}."
         try:
             layer_weights.extend([
                 g(p + "input_layernorm.weight"),
