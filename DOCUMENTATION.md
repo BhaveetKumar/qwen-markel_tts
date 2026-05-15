@@ -9,24 +9,25 @@ Complete guide to all qwen-markel-tts documentation.
 
 ## Setup & Deployment
 
-3. **[SETUP.md](SETUP.md)** — Complete installation guide with troubleshooting
-4. **[WEB_UI.md](WEB_UI.md)** — Browser-based UI guide (recommended for macOS)
-5. **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment (cloud, Docker, Kubernetes)
+3. **[SETUP_GUIDE.md](SETUP_GUIDE.md)** — ⭐ Complete single-file setup guide (recommended) — all requirements, installation, configuration, both demos, verification, troubleshooting, benchmarks
+4. **[SETUP.md](SETUP.md)** — Detailed installation guide with troubleshooting
+5. **[WEB_UI.md](WEB_UI.md)** — Browser-based UI guide (recommended for macOS)
+6. **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment (cloud, Docker, Kubernetes)
 
 ## Technical Reference
 
-6. **[API.md](API.md)** — HTTP API endpoints, request/response formats, examples
-7. **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design, data flow, performance breakdown
+7. **[API.md](API.md)** — HTTP API endpoints, request/response formats, examples
+8. **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design, data flow, performance breakdown
 
 ## Submission & Analysis
 
-8. **[SUBMISSION.md](SUBMISSION.md)** — What was delivered, what wasn't, how to evaluate
-9. **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — Kernel integration analysis vs original qwen_megakernel
-10. **[docs/implementation_audit_2026-05-15.md](docs/implementation_audit_2026-05-15.md)** — Requirement-by-requirement audit vs context.md
+9. **[SUBMISSION.md](SUBMISSION.md)** — What was delivered, what wasn't, how to evaluate
+10. **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — Kernel integration analysis vs original qwen_megakernel
+11. **[docs/implementation_audit_2026-05-15.md](docs/implementation_audit_2026-05-15.md)** — Requirement-by-requirement audit vs context.md
 
 ## Data & Benchmarks
 
-11. **[docs/benchmark_30_requests.json](docs/benchmark_30_requests.json)** — Raw benchmark data (30 runs, 96 tokens each)
+12. **[docs/benchmark_30_requests.json](docs/benchmark_30_requests.json)** — Raw benchmark data (30 runs, 96 tokens each)
 
 ---
 
@@ -35,7 +36,10 @@ Complete guide to all qwen-markel-tts documentation.
 ### "I have 5 minutes"
 → Read [QUICKSTART.md](QUICKSTART.md)
 
-### "I want to set up locally"
+### "I want to set up locally (complete guide)"
+→ Read [SETUP_GUIDE.md](SETUP_GUIDE.md) ⭐ (single file with everything)
+
+### "I want to set up locally (detailed docs)"
 → Read [SETUP.md](SETUP.md)
 
 ### "I want to deploy to production"
