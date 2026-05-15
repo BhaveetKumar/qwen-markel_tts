@@ -42,21 +42,42 @@ sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliqu
 """.strip()
 
 
-def generate_benchmark_text(num_lines: int) -> str:
-    """Generate text with specified number of lines by repeating sample text."""
+def generate_benchmark_text(num_lines: int, max_chars: int = 4096) -> str:
+    """Generate text with specified number of lines, capped at max_chars.
+    
+    Args:
+        num_lines: Target number of lines (approximate)
+        max_chars: Maximum character limit (API constraint: 4096)
+    
+    Returns:
+        Text up to max_chars, with complete sentences only
+    """
     lines_needed = num_lines
     result = []
     line_count = 0
+    current_length = 0
     
     while line_count < lines_needed:
         for sentence in SAMPLE_TEXT.split("."):
             if line_count >= lines_needed:
                 break
             if sentence.strip():
-                result.append(sentence.strip() + ".")
+                sentence_with_period = sentence.strip() + "."
+                # Check if adding this sentence would exceed the limit
+                test_text = " ".join(result + [sentence_with_period])
+                if len(test_text) > max_chars:
+                    # Return what we have so far (don't exceed limit)
+                    return " ".join(result)
+                result.append(sentence_with_period)
+                current_length = len(" ".join(result))
                 line_count += 1
     
-    return " ".join(result[:lines_needed])
+    final_text = " ".join(result[:lines_needed])
+    # Ensure we don't exceed max_chars
+    if len(final_text) > max_chars:
+        final_text = final_text[:max_chars].rsplit(" ", 1)[0]  # Truncate at word boundary
+    
+    return final_text
 
 
 async def _run_single(
@@ -128,7 +149,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Extended benchmark with large text inputs")
     parser.add_argument("--url", default=_DEFAULT_URL, help="Server base URL")
     parser.add_argument("--runs", type=int, default=3, help="Number of runs per text size")
-    parser.add_argument("--sizes", default="100,250,500,750,1000", help="Comma-separated line counts to benchmark")
+    parser.add_argument("--sizes", default="10,20,50,100", help="Comma-separated line counts to benchmark (each line ~150 chars, 4096 char limit per request)")
     parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
     parser.add_argument("--audit-dir", default="docs/audit", help="Directory for audit logs")
     args = parser.parse_args()
