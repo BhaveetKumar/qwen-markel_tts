@@ -20,44 +20,24 @@ FastAPI /tts/stream (NDJSON chunks)
 Pipecat TTSService (audio transport)
 ```
 
-## Quick Start (5 Minutes)
-
-### Option A: Native Voice Pipeline (Linux/GPU servers)
+## Quick Start
 
 ```bash
 # 1. Install
 pip install -e ".[dev]"
 
-# 2. Configure
+# 2. Configure secrets
 echo "DEEPGRAM_API_KEY=your_key" >> .env
 echo "OPENAI_API_KEY=your_key" >> .env
 
-# 3. Start server (Terminal 1)
+# 3. Start TTS server (Terminal 1)
 bash scripts/run_server.sh
 
-# 4. Run demo (Terminal 2)
+# 4. Run Pipecat voice demo (Terminal 2)
 python scripts/demo.py --tts-url http://localhost:8000
 ```
 
-### Option B: Browser-Based UI (Recommended)
-
-```bash
-# 1. Install
-pip install -e ".[dev]"
-
-# 2. Configure
-echo "DEEPGRAM_API_KEY=your_key" >> .env
-echo "OPENAI_API_KEY=your_key" >> .env
-
-# 3. Start server (Terminal 1)
-bash scripts/run_server.sh
-
-# 4. Run web UI (Terminal 2)
-python scripts/web_demo.py --port 8080
-
-# 5. Open browser
-# → http://localhost:8080
-```
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete setup instructions.
 
 ## Requirements
 
@@ -88,21 +68,18 @@ Benchmarks: [docs/benchmark_30_requests.json](docs/benchmark_30_requests.json)
 
 ## Documentation
 
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** — Complete setup guide (recommended)
-- **[QUICKSTART.md](QUICKSTART.md)** — 5-minute quick start
-- **[WEB_UI.md](WEB_UI.md)** — Browser UI guide
-- **[API.md](API.md)** — HTTP API reference
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design
-- **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — CUDA kernel integration
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** — Complete setup guide with all requirements, installation, configuration, demos, verification, and troubleshooting
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design and CUDA kernel integration details
+- **[API.md](API.md)** — HTTP API reference and performance metrics
+- **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — Kernel modifications and integration analysis
 
 ## Features
 
 ✅ CUDA-optimized decode (13,000+ tokens/sec)  
 ✅ Streaming audio output (no buffering)  
 ✅ Pipecat voice pipeline integration  
-✅ Browser microphone support (macOS-friendly)  
 ✅ Real-time performance (TTFC < 60ms, RTF < 0.15)  
-✅ Comprehensive documentation
+✅ Full documentation and benchmarks
 
 ## Testing
 
