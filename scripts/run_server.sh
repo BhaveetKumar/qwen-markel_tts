@@ -34,6 +34,24 @@ if [[ -n "${HF_TOKEN:-}" && -z "${HUGGINGFACE_HUB_TOKEN:-}" ]]; then
     export HUGGINGFACE_HUB_TOKEN="$HF_TOKEN"
 fi
 
+# Preflight: enforce huggingface-hub compatibility expected by transformers/qwen_tts.
+if ! python3 - <<'PY'
+from importlib.metadata import version
+from packaging.version import Version
+
+try:
+    hv = Version(version("huggingface_hub"))
+except Exception:
+    raise SystemExit(1)
+
+ok = Version("0.34.0") <= hv < Version("1.0.0")
+raise SystemExit(0 if ok else 1)
+PY
+then
+    echo "[startup] Installing compatible huggingface-hub (>=0.34.0,<1.0.0)..."
+    python3 -m pip install --quiet --upgrade "huggingface-hub>=0.34.0,<1.0.0"
+fi
+
 # Normalize Hugging Face runtime/cache layout for container hosts (e.g., Vast).
 export HF_HOME="${HF_HOME:-/workspace/.hf_home}"
 export HF_HUB_CACHE="${HF_HUB_CACHE:-$HF_HOME/hub}"
