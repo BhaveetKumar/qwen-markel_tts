@@ -132,18 +132,39 @@ def _find_qwen_tts_root() -> Optional[str]:
     return None
 
 
+def _candidate_model_names(model_name: str) -> list[str]:
+    """Return ordered model source candidates (hub id first, then local clone path)."""
+    candidates = [model_name]
+    local_root = _find_qwen_tts_root()
+    if local_root and local_root not in candidates:
+        candidates.append(local_root)
+    return candidates
+
+
 def _load_via_qwen_tts_package(model_name, device, dtype, verbose):
     """Load via local qwen_tts package (preferred — uses registered model classes)."""
     from qwen_tts.inference.qwen3_tts_model import Qwen3TTSModel  # type: ignore
 
     token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
-    model_obj = Qwen3TTSModel.from_pretrained(
-        model_name,
-        torch_dtype=dtype,
-        device_map=device,
-        token=token,
-    )
+    model_obj = None
+    last_exc = None
+    for candidate in _candidate_model_names(model_name):
+        kwargs = {
+            "torch_dtype": dtype,
+            "device_map": device,
+            "token": token,
+        }
+        if os.path.isdir(candidate):
+            kwargs["local_files_only"] = True
+        try:
+            model_obj = Qwen3TTSModel.from_pretrained(candidate, **kwargs)
+            break
+        except Exception as exc:
+            last_exc = exc
+
+    if model_obj is None:
+        raise RuntimeError(f"Qwen3TTSModel.from_pretrained failed: {last_exc}")
     hf_model = model_obj.model
     processor = model_obj.processor
     # Extract the talker decoder sub-module state dict.
@@ -176,19 +197,40 @@ def _load_via_automodel(model_name, device, dtype, verbose):
 
     model = None
     last_exc = None
-    for cls in (AutoModel, AutoModelForCausalLM):
-        try:
-            model = cls.from_pretrained(model_name, **common_kwargs)
+    for candidate in _candidate_model_names(model_name):
+        kwargs = dict(common_kwargs)
+        if os.path.isdir(candidate):
+            kwargs["local_files_only"] = True
+        for cls in (AutoModel, AutoModelForCausalLM):
+            try:
+                model = cls.from_pretrained(candidate, **kwargs)
+                break
+            except Exception as exc:
+                last_exc = exc
+        if model is not None:
             break
-        except Exception as exc:
-            last_exc = exc
 
     if model is None:
         raise RuntimeError(
             f"Failed to load model via AutoModel classes for {model_name}: {last_exc}"
         )
 
-    processor = AutoProcessor.from_pretrained(model_name, token=token)
+    processor = None
+    for candidate in _candidate_model_names(model_name):
+        kwargs = {"token": token}
+        if os.path.isdir(candidate):
+            kwargs["local_files_only"] = True
+        try:
+            processor = AutoProcessor.from_pretrained(candidate, **kwargs)
+            break
+        except Exception:
+            continue
+
+    if processor is None:
+        raise RuntimeError(
+            f"Failed to load processor for {model_name} from hub/local candidates."
+        )
+
     talker = getattr(model, "talker", model)
     state = talker.state_dict()
     return talker, processor, state
