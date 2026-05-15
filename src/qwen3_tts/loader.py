@@ -106,8 +106,11 @@ def load_talker_weights(
             raise
 
     weights = _extract_talker_weights(state, device, dtype)
-    if use_hf_fallback:
-        weights.hf_model = hf_model
+    # Always keep the successfully loaded model attached so runtime can
+    # decode through HF when CUDA megakernel is unavailable.
+    # `use_hf_fallback` only controls whether we return synthetic stub
+    # weights when loading fails.
+    weights.hf_model = hf_model
 
     return weights, tokenizer
 
