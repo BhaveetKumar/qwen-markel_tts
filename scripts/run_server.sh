@@ -14,6 +14,26 @@ if [[ -f "$PROJECT_ROOT/.env" ]]; then
     set +a
 fi
 
+# Fallback: load token from common SSH locations when project .env is absent.
+if [[ -z "${HF_TOKEN:-}" ]]; then
+    for token_file in \
+        "$HOME/.ssh/hf_token.env" \
+        "/root/.ssh/hf_token.env" \
+        "/root/workspace/qwen-markel_tts/.env"; do
+        if [[ -f "$token_file" ]]; then
+            set -a
+            source "$token_file"
+            set +a
+            break
+        fi
+    done
+fi
+
+# Hugging Face libraries often accept either env var name.
+if [[ -n "${HF_TOKEN:-}" && -z "${HUGGINGFACE_HUB_TOKEN:-}" ]]; then
+    export HUGGINGFACE_HUB_TOKEN="$HF_TOKEN"
+fi
+
 # Use HuggingFace model ID for weights/config. The local Qwen3-TTS clone,
 # when present, is used only for Python package imports by loader.py.
 export QWEN_TTS_MODEL="${QWEN_TTS_MODEL:-Qwen/Qwen3-TTS}"
