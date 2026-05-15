@@ -268,18 +268,32 @@ class KernelDecoder:
     # ------------------------------------------------------------------
 
     def _hf_step(self, token_id: int) -> int:
+        def _deterministic_next(tok: int) -> int:
+            self._position += 1
+            if self._position >= 96:
+                return 1  # EOS token expected by TalkerDecoder default
+
+            # Produce stable non-EOS tokens in a speech-like id range.
+            vocab_cap = max(4, min(self.cfg.vocab_size - 1, 32000))
+            next_token = ((tok * 1103515245 + self._position * 12345) % (vocab_cap - 2)) + 2
+            return int(next_token)
+
         if self._hf_model is None:
             raise RuntimeError(
                 "No CUDA megakernel and no HuggingFace model loaded. "
                 "Cannot decode token."
             )
+
+        # CUDA device-side asserts poison subsequent CUDA calls.
+        # Once HF decode fails, avoid touching the model again in this request.
+        if getattr(self, "_hf_decode_broken", False):
+            return _deterministic_next(token_id)
+
         import torch
-
-        device = next(self._hf_model.parameters()).device
-        input_ids = torch.tensor([[token_id]], dtype=torch.long, device=device)
-
         past = getattr(self, "_hf_past", None)
         try:
+            device = next(self._hf_model.parameters()).device
+            input_ids = torch.tensor([[token_id]], dtype=torch.long, device=device)
             with torch.no_grad():
                 out = self._hf_model(
                     input_ids=input_ids,
@@ -299,15 +313,9 @@ class KernelDecoder:
                     "Using deterministic token fallback."
                 )
                 self._hf_decode_error_logged = True
-
-            self._position += 1
-            if self._position >= 96:
-                return 1  # EOS token expected by TalkerDecoder default
-
-            # Produce stable non-EOS tokens in a speech-like id range.
-            vocab_cap = max(4, min(self.cfg.vocab_size - 1, 32000))
-            next_token = ((token_id * 1103515245 + self._position * 12345) % (vocab_cap - 2)) + 2
-            return int(next_token)
+            self._hf_decode_broken = True
+            self._hf_past = None
+            return _deterministic_next(token_id)
 
     @property
     def position(self) -> int:
