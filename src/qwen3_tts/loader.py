@@ -120,7 +120,10 @@ def _find_qwen_tts_root() -> Optional[str]:
     """Locate the local Qwen3-TTS clone."""
     candidates = [
         os.path.join(os.path.dirname(__file__), "../../../../Qwen3-TTS"),
+        os.path.join(os.path.dirname(__file__), "../../../../../Qwen3-TTS"),
+        "/root/workspace/Qwen3-TTS",
         os.path.join(os.getcwd(), "Qwen3-TTS"),
+        os.path.join(os.getcwd(), "../Qwen3-TTS"),
     ]
     for c in candidates:
         p = os.path.abspath(c)
@@ -133,10 +136,13 @@ def _load_via_qwen_tts_package(model_name, device, dtype, verbose):
     """Load via local qwen_tts package (preferred — uses registered model classes)."""
     from qwen_tts.inference.qwen3_tts_model import Qwen3TTSModel  # type: ignore
 
+    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
+
     model_obj = Qwen3TTSModel.from_pretrained(
         model_name,
         torch_dtype=dtype,
         device_map=device,
+        token=token,
     )
     hf_model = model_obj.model
     processor = model_obj.processor
@@ -154,8 +160,15 @@ def _load_via_automodel(model_name, device, dtype, verbose):
     """Generic HuggingFace AutoModel fallback."""
     from transformers import AutoModel, AutoProcessor  # type: ignore
 
-    model = AutoModel.from_pretrained(model_name, torch_dtype=dtype, device_map=device)
-    processor = AutoProcessor.from_pretrained(model_name)
+    token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
+
+    model = AutoModel.from_pretrained(
+        model_name,
+        torch_dtype=dtype,
+        device_map=device,
+        token=token,
+    )
+    processor = AutoProcessor.from_pretrained(model_name, token=token)
     talker = getattr(model, "talker", model)
     state = talker.state_dict()
     return talker, processor, state
