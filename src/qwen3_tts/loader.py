@@ -288,17 +288,38 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
     the standard HuggingFace Qwen3 naming convention.
     """
     def g(key: str) -> torch.Tensor:
+        if key not in state:
+            raise KeyError(
+                f"Weight key '{key}' not found in model state. Available keys: "
+                f"{list(state.keys())[:10]}... (showing first 10)"
+            )
         return state[key].to(dtype=dtype, device=device).contiguous()
 
     # Detect num_layers from state_dict keys
+    layer_keys = [k for k in state.keys() if ".layers." in k]
+    if not layer_keys:
+        raise ValueError(
+            f"No model.layers.* keys found in state dict. "
+            f"Available keys: {list(state.keys())[:20]}"
+        )
     num_layers = max(
-        int(k.split(".")[2])
-        for k in state.keys()
-        if k.startswith("model.layers.")
+        int(k.split(".")[k.split(".").index("layers") + 1])
+        for k in layer_keys
     ) + 1
 
+    # Find embed_tokens key with flexible matching
+    embed_key = None
+    for key in state.keys():
+        if "embed_tokens" in key and "weight" in key:
+            embed_key = key
+            break
+    if embed_key is None:
+        raise KeyError(
+            f"No embed_tokens.weight key found. Available keys: {list(state.keys())[:20]}"
+        )
+
     # Detect hidden_size from embedding
-    embed_weight = g("model.embed_tokens.weight")
+    embed_weight = g(embed_key)
     hidden_size = embed_weight.shape[1]
     head_dim = 128
 
@@ -313,26 +334,68 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
     cos_table = torch.cos(freqs).repeat(1, 2).to(dtype).to(device).contiguous()
     sin_table = torch.sin(freqs).repeat(1, 2).to(dtype).to(device).contiguous()
 
-    # Per-layer weights (11 tensors each)
+    # Find layer prefix by examining actual keys
+    layer_prefix = None
+    for key in state.keys():
+        if ".layers." in key:
+            # Extract prefix up to and including .layers.{i}.
+            parts = key.split(".")
+            layer_idx = parts.index("layers") + 1
+            prefix_parts = parts[:layer_idx + 1]
+            layer_prefix = ".".join(prefix_parts) + "."
+            break
+    
+    if layer_prefix is None:
+        raise ValueError(
+            f"Could not find layer prefix in state dict. Available keys: {list(state.keys())[:20]}"
+        )
+    
+    logger.debug(f"Detected layer prefix: {layer_prefix}")
+
+    # Per-layer weights (11 tensors each) — try with detected prefix
     layer_weights = []
     for i in range(num_layers):
-        p = f"model.layers.{i}."
-        layer_weights.extend([
-            g(p + "input_layernorm.weight"),
-            g(p + "self_attn.q_proj.weight"),
-            g(p + "self_attn.k_proj.weight"),
-            g(p + "self_attn.v_proj.weight"),
-            g(p + "self_attn.q_norm.weight"),
-            g(p + "self_attn.k_norm.weight"),
-            g(p + "self_attn.o_proj.weight"),
-            g(p + "post_attention_layernorm.weight"),
-            g(p + "mlp.gate_proj.weight"),
-            g(p + "mlp.up_proj.weight"),
-            g(p + "mlp.down_proj.weight"),
-        ])
+        p = layer_prefix.replace("{i}", str(i)) if "{i}" in layer_prefix else f"{layer_prefix.rsplit('.', 2)[0]}.{i}."
+        try:
+            layer_weights.extend([
+                g(p + "input_layernorm.weight"),
+                g(p + "self_attn.q_proj.weight"),
+                g(p + "self_attn.k_proj.weight"),
+                g(p + "self_attn.v_proj.weight"),
+                g(p + "self_attn.q_norm.weight"),
+                g(p + "self_attn.k_norm.weight"),
+                g(p + "self_attn.o_proj.weight"),
+                g(p + "post_attention_layernorm.weight"),
+                g(p + "mlp.gate_proj.weight"),
+                g(p + "mlp.up_proj.weight"),
+                g(p + "mlp.down_proj.weight"),
+            ])
+        except KeyError as exc:
+            logger.error(
+                f"Failed to extract layer {i} weights from prefix {p}. "
+                f"Error: {exc}. Available sample keys: {list(state.keys())[:20]}"
+            )
+            raise
 
-    final_norm = g("model.norm.weight")
-    lm_head = g("lm_head.weight") if "lm_head.weight" in state else embed_weight
+    # Find final norm and lm_head
+    final_norm_key = None
+    for key in state.keys():
+        if key.endswith("norm.weight") and "layer" not in key and "attention" not in key:
+            final_norm_key = key
+            break
+    
+    if final_norm_key is None:
+        final_norm_key = "model.norm.weight"
+    
+    final_norm = g(final_norm_key) if final_norm_key in state else torch.ones(hidden_size, dtype=dtype, device=device)
+    
+    lm_head = None
+    for key in state.keys():
+        if "lm_head.weight" in key or key == "lm_head.weight":
+            lm_head = g(key)
+            break
+    if lm_head is None:
+        lm_head = embed_weight
 
     return TalkerWeights(
         embed_weight=embed_weight,
