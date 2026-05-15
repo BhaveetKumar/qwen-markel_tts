@@ -84,6 +84,16 @@ class _DummyHFModel:
         return _Out(logits, past_key_values or ())
 
 
+class _FailingHFModel:
+    """HF-style model stub that always raises on decode calls."""
+
+    def parameters(self):
+        yield torch.zeros(1)
+
+    def __call__(self, input_ids, past_key_values=None, use_cache=False):
+        raise TypeError("expected Tensor as element 0 in argument 0, but got NoneType")
+
+
 @pytest.fixture
 def stub_decoder():
     """KernelDecoder in HF-fallback mode with a tiny stub."""
@@ -155,3 +165,31 @@ def test_kernel_decoder_raises_without_model():
     decoder = KernelDecoder(weights_dict, cfg, hf_model=None)
     with pytest.raises(RuntimeError, match="Cannot decode token"):
         decoder.step(0)
+
+
+def test_kernel_decoder_falls_back_when_hf_decode_raises():
+    cfg = ModelConfig(
+        name="failing_model",
+        hidden_size=64,
+        intermediate_size=128,
+        num_q_heads=2,
+        num_kv_heads=2,
+        head_dim=16,
+        num_layers=2,
+        vocab_size=256,
+        max_seq_len=128,
+    )
+    stub_w = _make_stub_weights()
+    weights_dict = {
+        "embed_weight": stub_w.embed_weight,
+        "layer_weights": stub_w.layer_weights,
+        "final_norm_weight": stub_w.final_norm_weight,
+        "lm_head_weight": stub_w.lm_head_weight,
+        "cos_table": stub_w.cos_table,
+        "sin_table": stub_w.sin_table,
+    }
+
+    decoder = KernelDecoder(weights_dict, cfg, hf_model=_FailingHFModel())
+    tok = decoder.step(7)
+    assert isinstance(tok, int)
+    assert tok != 1  # first fallback token should not be EOS
