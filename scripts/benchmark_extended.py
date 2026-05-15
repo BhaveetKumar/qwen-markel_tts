@@ -78,7 +78,9 @@ async def _run_single(
     try:
         async with session.post(f"{url}/tts/stream", json={"text": text}) as resp:
             if resp.status != 200:
-                raise RuntimeError(f"Server returned {resp.status}")
+                error_detail = await resp.text() if resp.status == 422 else f"HTTP {resp.status}"
+                error = f"Server error {resp.status}: {error_detail[:200]}"
+                raise RuntimeError(error)
 
             async for raw_line in resp.content:
                 line = raw_line.strip()
@@ -182,14 +184,19 @@ async def main():
                     size_results.append(result)
                     all_results.append(result)
                     
-                    print(
-                        f"  Run {run_idx+1:2d}: "
-                        f"elapsed={result['elapsed_ms']:7.1f}ms  "
-                        f"TTFC={result['ttfc_ms']:7.1f}ms  "
-                        f"RTF={result.get('RTF', 0):7.4f}  "
-                        f"tok/s={result.get('decode_tokens_per_sec', 0):8.0f}  "
-                        f"chunks={result['chunk_count']}"
-                    )
+                    if result.get("error"):
+                        print(
+                            f"  Run {run_idx+1:2d}: ERROR — {result['error']}"
+                        )
+                    else:
+                        print(
+                            f"  Run {run_idx+1:2d}: "
+                            f"elapsed={result['elapsed_ms']:7.1f}ms  "
+                            f"TTFC={result['ttfc_ms']:7.1f}ms  "
+                            f"RTF={result.get('RTF', 0):7.4f}  "
+                            f"tok/s={result.get('decode_tokens_per_sec', 0):8.0f}  "
+                            f"chunks={result['chunk_count']}"
+                        )
                 except Exception as exc:
                     print(f"  Run {run_idx+1:2d}: ERROR — {exc}")
 
