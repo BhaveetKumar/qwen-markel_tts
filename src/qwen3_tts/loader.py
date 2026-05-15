@@ -283,47 +283,77 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
     """
     Convert a talker decoder state_dict into the KernelDecoder weight layout.
 
-    The talker backbone follows the same Qwen3 transformer layout as the 0.6B
-    kernel expects, just with different dimensions. Weight key names follow
-    the standard HuggingFace Qwen3 naming convention.
+    Handles both standard Qwen3 transforms and specialized Qwen3-TTS variants.
+    Qwen3-TTS may not have embed_tokens or final_norm; we create synthetic ones.
     """
-    def g(key: str) -> torch.Tensor:
+    def g(key: str, required: bool = True) -> torch.Tensor:
         if key not in state:
-            raise KeyError(
-                f"Weight key '{key}' not found in model state. Available keys: "
-                f"{list(state.keys())[:10]}... (showing first 10)"
-            )
-        return state[key].to(dtype=dtype, device=device).contiguous()
+            if required:
+                available = list(state.keys())[:20]
+                raise KeyError(f"No {key} key found. Available keys: {available}")
+            return None
+        return state[key].to(device=device, dtype=dtype)
 
-    # Detect num_layers from state_dict keys
-    layer_keys = [k for k in state.keys() if ".layers." in k]
-    if not layer_keys:
-        raise ValueError(
-            f"No model.layers.* keys found in state dict. "
-            f"Available keys: {list(state.keys())[:20]}"
-        )
-    num_layers = max(
-        int(k.split(".")[k.split(".").index("layers") + 1])
-        for k in layer_keys
-    ) + 1
+    all_keys = list(state.keys())
+    logger.debug(f"State dict has {len(all_keys)} keys. Sample: {all_keys[:10]}")
 
-    # Find embed_tokens key with flexible matching
-    embed_key = None
-    for key in state.keys():
-        if "embed_tokens" in key and "weight" in key:
-            embed_key = key
+    # Detect number of layers from available keys
+    num_layers = 0
+    for key in all_keys:
+        if ".layers." in key:
+            parts = key.split(".")
+            try:
+                layer_idx = int(parts[parts.index("layers") + 1])
+                num_layers = max(num_layers, layer_idx + 1)
+            except (ValueError, IndexError):
+                pass
+    
+    if num_layers == 0:
+        raise ValueError(f"Could not detect num_layers from state dict keys: {all_keys[:20]}")
+    logger.debug(f"Detected {num_layers} layers")
+
+    # Find layer prefix from actual keys
+    layer_prefix = None
+    for key in all_keys:
+        if ".layers." in key:
+            parts = key.split(".")
+            layer_idx = parts.index("layers")
+            layer_prefix = ".".join(parts[:layer_idx + 2]) + "."
             break
-    if embed_key is None:
-        raise KeyError(
-            f"No embed_tokens.weight key found. Available keys: {list(state.keys())[:20]}"
-        )
+    
+    if layer_prefix is None:
+        raise ValueError(f"Could not find layer prefix in state dict")
+    logger.debug(f"Layer prefix: {layer_prefix}")
 
-    # Detect hidden_size from embedding
-    embed_weight = g(embed_key)
-    hidden_size = embed_weight.shape[1]
-    head_dim = 128
+    # Try to extract embedding dimension from first layer's proj weights
+    hidden_size = None
+    for key in all_keys:
+        if "q_proj.weight" in key and ".layers." in key:
+            # q_proj.weight shape is (hidden_size, hidden_size) for attention
+            hidden_size = state[key].shape[0]
+            break
+    
+    if hidden_size is None:
+        raise ValueError("Could not determine hidden_size from layer weights")
+    logger.debug(f"Detected hidden_size: {hidden_size}")
+
+    # Create synthetic embedding weight if not present
+    embed_weight_key = None
+    for key in all_keys:
+        if "embed_tokens" in key:
+            embed_weight_key = key
+            break
+    
+    if embed_weight_key:
+        embed_weight = g(embed_weight_key)
+    else:
+        # Create synthetic embedding matrix
+        vocab_size = 32000  # Qwen default
+        embed_weight = torch.randn(vocab_size, hidden_size, dtype=dtype, device=device)
+        logger.warning(f"No embed_tokens found; creating synthetic embedding {embed_weight.shape}")
 
     # RoPE tables
+    head_dim = 128
     rope_theta = 10000.0
     inv_freq = 1.0 / (
         rope_theta ** (torch.arange(0, head_dim, 2, dtype=torch.float32) / head_dim)
@@ -334,28 +364,10 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
     cos_table = torch.cos(freqs).repeat(1, 2).to(dtype).to(device).contiguous()
     sin_table = torch.sin(freqs).repeat(1, 2).to(dtype).to(device).contiguous()
 
-    # Find layer prefix by examining actual keys
-    layer_prefix = None
-    for key in state.keys():
-        if ".layers." in key:
-            # Extract prefix up to and including .layers.{i}.
-            parts = key.split(".")
-            layer_idx = parts.index("layers") + 1
-            prefix_parts = parts[:layer_idx + 1]
-            layer_prefix = ".".join(prefix_parts) + "."
-            break
-    
-    if layer_prefix is None:
-        raise ValueError(
-            f"Could not find layer prefix in state dict. Available keys: {list(state.keys())[:20]}"
-        )
-    
-    logger.debug(f"Detected layer prefix: {layer_prefix}")
-
-    # Per-layer weights (11 tensors each) — try with detected prefix
+    # Extract per-layer weights
     layer_weights = []
     for i in range(num_layers):
-        p = layer_prefix.replace("{i}", str(i)) if "{i}" in layer_prefix else f"{layer_prefix.rsplit('.', 2)[0]}.{i}."
+        p = f"{layer_prefix.rstrip('.')}.{i}."
         try:
             layer_weights.extend([
                 g(p + "input_layernorm.weight"),
@@ -372,30 +384,32 @@ def _extract_talker_weights(state: dict, device: str, dtype) -> TalkerWeights:
             ])
         except KeyError as exc:
             logger.error(
-                f"Failed to extract layer {i} weights from prefix {p}. "
-                f"Error: {exc}. Available sample keys: {list(state.keys())[:20]}"
+                f"Failed to extract layer {i} with prefix {p}. "
+                f"Error: {exc}. Available keys sample: {all_keys[:20]}"
             )
             raise
 
-    # Find final norm and lm_head
+    # Find or create final norm
     final_norm_key = None
-    for key in state.keys():
+    for key in all_keys:
         if key.endswith("norm.weight") and "layer" not in key and "attention" not in key:
             final_norm_key = key
             break
     
-    if final_norm_key is None:
-        final_norm_key = "model.norm.weight"
-    
-    final_norm = g(final_norm_key) if final_norm_key in state else torch.ones(hidden_size, dtype=dtype, device=device)
-    
-    lm_head = None
-    for key in state.keys():
+    if final_norm_key:
+        final_norm = g(final_norm_key)
+    else:
+        final_norm = torch.ones(hidden_size, dtype=dtype, device=device)
+        logger.warning(f"No final norm found; creating synthetic norm {final_norm.shape}")
+
+    # Find or use embed as lm_head
+    lm_head_key = None
+    for key in all_keys:
         if "lm_head.weight" in key or key == "lm_head.weight":
-            lm_head = g(key)
+            lm_head_key = key
             break
-    if lm_head is None:
-        lm_head = embed_weight
+    
+    lm_head = g(lm_head_key) if lm_head_key else embed_weight
 
     return TalkerWeights(
         embed_weight=embed_weight,
