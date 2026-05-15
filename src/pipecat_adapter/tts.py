@@ -67,6 +67,8 @@ if _PIPECAT_AVAILABLE:
     @dataclass
     class QwenTTSSettings(TTSSettings):
         """Settings for QwenMegakernelTTSService."""
+        model: str = "Qwen3-TTS-12Hz-0.6B-Base"
+        language: str = "en"
         voice: str = "default"
 
     _BaseService = TTSService
@@ -119,9 +121,7 @@ class QwenMegakernelTTSService(_BaseService):
         **kwargs,
     ):
         if _PIPECAT_AVAILABLE:
-            settings = settings or QwenTTSSettings(
-                sample_rate=sample_rate or 16000,
-            )
+            settings = settings or QwenTTSSettings()
             super().__init__(sample_rate=sample_rate, settings=settings, **kwargs)
         else:
             super().__init__(**kwargs)

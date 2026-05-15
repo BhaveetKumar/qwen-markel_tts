@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Qwen3-TTS Voice Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { --bg:#0b1020; --panel:#141a33; --accent:#7c5cff; --accent2:#43e0c1; --text:#e7ecff; --muted:#8b94c2; --bad:#ff6b81; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:linear-gradient(160deg,#0b1020,#1a1240 90%); color:var(--text); font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card { width:100%; max-width:680px; background:var(--panel); border:1px solid #2a325a; border-radius:18px; padding:28px; box-shadow:0 30px 80px rgba(0,0,0,.45); }
+    h1 { margin:0 0 4px; font-size:22px; }
+    .sub { color:var(--muted); margin-bottom:24px; font-size:13px; }
+    .mic-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; padding:24px 0; }
+    button.mic { width:120px; height:120px; border-radius:50%; border:none; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; font-size:42px; cursor:pointer; transition:transform .15s, box-shadow .2s; box-shadow:0 12px 30px rgba(124,92,255,.4); }
+    button.mic:hover { transform:scale(1.05); }
+    button.mic.recording { background:linear-gradient(135deg,#ff5c7a,#ff9e3d); box-shadow:0 0 0 0 rgba(255,92,122,.6); animation:pulse 1.2s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,92,122,.6);} 70%{box-shadow:0 0 0 24px rgba(255,92,122,0);} 100%{box-shadow:0 0 0 0 rgba(255,92,122,0);} }
+    .status { color:var(--muted); font-size:13px; min-height:20px; }
+    .panel { background:#0e1430; border:1px solid #232b54; border-radius:12px; padding:14px 16px; margin-top:14px; }
+    .label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:6px; }
+    .text { white-space:pre-wrap; min-height:18px; }
+    .metrics { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+    .metric b { color:var(--text); }
+    .err { color:var(--bad); }
+    audio { width:100%; margin-top:8px; }
+    .footer { margin-top:18px; font-size:11px; color:var(--muted); text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎙️ Qwen3-TTS Voice Demo</h1>
+    <div class="sub">Press the button, speak, and release. Your audio runs through Deepgram → OpenAI → Qwen3-TTS.</div>
+
+    <div class="mic-wrap">
+      <button id="mic" class="mic" title="Hold or click to record">🎤</button>
+      <div id="status" class="status">Idle. Click the mic to start recording.</div>
+    </div>
+
+    <div class="panel">
+      <div class="label">You said</div>
+      <div id="transcript" class="text">—</div>
+    </div>
+
+    <div class="panel">
+      <div class="label">Assistant</div>
+      <div id="response" class="text">—</div>
+      <audio id="player" controls></audio>
+      <div id="metrics" class="metrics" style="margin-top:8px;"></div>
+    </div>
+
+    <div id="error" class="panel err" style="display:none;"></div>
+
+    <div class="footer">Browser captures audio · Server proxies STT/LLM/TTS · 24 kHz playback</div>
+  </div>
+
+  <script>
+    const micBtn = document.getElementById('mic');
+    const statusEl = document.getElementById('status');
+    const transcriptEl = document.getElementById('transcript');
+    const responseEl = document.getElementById('response');
+    const player = document.getElementById('player');
+    const metricsEl = document.getElementById('metrics');
+    const errorEl = document.getElementById('error');
+
+    let recorder = null;
+    let chunks = [];
+    let stream = null;
+    let recording = false;
+
+    function setStatus(msg) { statusEl.textContent = msg; }
+    function showError(msg) { errorEl.style.display = 'block'; errorEl.textContent = msg; }
+    function clearError() { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
+    async function startRecording() {
+      clearError();
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      } catch (e) {
+        showError('Microphone access denied: ' + e.message);
+        return;
+      }
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+      recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = onStop;
+      recorder.start();
+      recording = true;
+      micBtn.classList.add('recording');
+      micBtn.textContent = '⏹';
+      setStatus('Recording… click to stop.');
+    }
+
+    async function stopRecording() {
+      if (!recorder || recorder.state === 'inactive') return;
+      recorder.stop();
+      recording = false;
+      micBtn.classList.remove('recording');
+      micBtn.textContent = '🎤';
+      setStatus('Processing…');
+    }
+
+    async function onStop() {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+      try {
+        const t0 = performance.now();
+        const resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': blob.type || 'audio/webm' },
+          body: blob,
+        });
+        const data = await resp.json();
+        const dt = ((performance.now() - t0) / 1000).toFixed(2);
+
+        if (!resp.ok || data.error) {
+          showError(data.error || ('HTTP ' + resp.status));
+          if (data.transcript) transcriptEl.textContent = data.transcript;
+          setStatus('Error.');
+          return;
+        }
+
+        transcriptEl.textContent = data.transcript || '(silence)';
+        responseEl.textContent = data.response || '—';
+        if (data.warning) showError(data.warning);
+
+        if (data.audio_b64) {
+          player.src = 'data:audio/wav;base64,' + data.audio_b64;
+          player.play().catch(() => {});
+        }
+
+        const m = data.metrics || {};
+        metricsEl.innerHTML = [
+          'TTFC: <b>' + (m.TTFC_ms ? m.TTFC_ms.toFixed(0) + ' ms' : '–') + '</b>',
+          'RTF: <b>' + (m.RTF ? m.RTF.toFixed(3) : '–') + '</b>',
+          'tok/s: <b>' + (m.decode_tokens_per_sec ? m.decode_tokens_per_sec.toFixed(0) : '–') + '</b>',
+          'round-trip: <b>' + dt + ' s</b>',
+        ].map(x => '<div class="metric">' + x + '</div>').join('');
+        setStatus('Done. Click the mic to speak again.');
+      } catch (e) {
+        showError(e.message);
+        setStatus('Error.');
+      }
+    }
+
+    micBtn.addEventListener('click', () => {
+      if (recording) stopRecording();
+      else startRecording();
+    });
+
+    // Spacebar push-to-talk
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !recording && document.activeElement !== micBtn) {
+        e.preventDefault();
+        startRecording();
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' && recording) {
+        e.preventDefault();
+        stopRecording();
+      }
+    });
+  </script>
+</body>
+</html>

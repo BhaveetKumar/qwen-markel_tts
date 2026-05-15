@@ -1,5 +1,6 @@
 torch>=2.0.0
 transformers>=4.40.0
+huggingface-hub<1.0.0,>=0.34.0
 accelerate>=0.26.0
 ninja
 fastapi>=0.111.0

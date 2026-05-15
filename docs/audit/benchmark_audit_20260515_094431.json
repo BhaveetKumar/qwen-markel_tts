@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-05-15T09:44:31.638514",
+  "url": "http://localhost:8000",
+  "text_sizes": [
+    100,
+    250
+  ],
+  "runs_per_size": 2,
+  "total_runs": 4,
+  "results": [
+    {
+      "run_id": 1,
+      "text_size": "100 lines",
+      "text_length_chars": 13867,
+      "elapsed_ms": 0.42574998224154115,
+      "ttfc_ms": 0,
+      "total_pcm_bytes": 0,
+      "chunk_count": 0,
+      "pcm_chunks_metadata": [],
+      "timestamp": "2026-05-15T09:44:31.636892",
+      "error": "Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 8000, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 8000)]"
+    },
+    {
+      "run_id": 2,
+      "text_size": "100 lines",
+      "text_length_chars": 13867,
+      "elapsed_ms": 0.3346249577589333,
+      "ttfc_ms": 0,
+      "total_pcm_bytes": 0,
+      "chunk_count": 0,
+      "pcm_chunks_metadata": [],
+      "timestamp": "2026-05-15T09:44:31.637238",
+      "error": "Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('127.0.0.1', 8000), [Errno 61] Connect call failed ('::1', 8000, 0, 0)]"
+    },
+    {
+      "run_id": 1,
+      "text_size": "250 lines",
+      "text_length_chars": 34752,
+      "elapsed_ms": 0.5145830218680203,
+      "ttfc_ms": 0,
+      "total_pcm_bytes": 0,
+      "chunk_count": 0,
+      "pcm_chunks_metadata": [],
+      "timestamp": "2026-05-15T09:44:31.637849",
+      "error": "Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 8000, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 8000)]"
+    },
+    {
+      "run_id": 2,
+      "text_size": "250 lines",
+      "text_length_chars": 34752,
+      "elapsed_ms": 0.5972090293653309,
+      "ttfc_ms": 0,
+      "total_pcm_bytes": 0,
+      "chunk_count": 0,
+      "pcm_chunks_metadata": [],
+      "timestamp": "2026-05-15T09:44:31.638453",
+      "error": "Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('127.0.0.1', 8000), [Errno 61] Connect call failed ('::1', 8000, 0, 0)]"
+    }
+  ]
+}

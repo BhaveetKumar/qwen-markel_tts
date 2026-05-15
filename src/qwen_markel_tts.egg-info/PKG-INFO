@@ -5,6 +5,7 @@ Summary: RTX 5090 megakernel-backed Qwen3-TTS talker decoder with Pipecat integr
 Requires-Python: >=3.11
 Requires-Dist: torch>=2.0.0
 Requires-Dist: transformers>=4.40.0
+Requires-Dist: huggingface-hub<1.0.0,>=0.34.0
 Requires-Dist: accelerate>=0.26.0
 Requires-Dist: ninja
 Requires-Dist: fastapi>=0.111.0

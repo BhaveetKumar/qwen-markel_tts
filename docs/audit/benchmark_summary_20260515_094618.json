@@ -1,0 +1,185 @@
+{
+  "timestamp": "2026-05-15T09:46:28.896915",
+  "url": "https://collectibles-wrapped-studied-hazards.trycloudflare.com",
+  "text_sizes": [
+    100,
+    250,
+    500,
+    750,
+    1000
+  ],
+  "runs_per_size": 3,
+  "total_runs": 15,
+  "by_size": {
+    "100_lines": {
+      "runs": 3,
+      "elapsed_ms": {
+        "mean": 550.1694586904099,
+        "min": 305.9029590222053,
+        "max": 1029.203417012468,
+        "stdev": 414.8827640000517
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "250_lines": {
+      "runs": 3,
+      "elapsed_ms": {
+        "mean": 426.0310276489084,
+        "min": 347.60141698643565,
+        "max": 475.1666249940172,
+        "stdev": 68.64273439835281
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "500_lines": {
+      "runs": 3,
+      "elapsed_ms": {
+        "mean": 517.9420140145036,
+        "min": 431.733459001407,
+        "max": 561.8982500163838,
+        "stdev": 74.66365950957898
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "750_lines": {
+      "runs": 3,
+      "elapsed_ms": {
+        "mean": 810.7170140137896,
+        "min": 799.4198750238866,
+        "max": 828.4725840203464,
+        "stdev": 15.56593952853156
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "1000_lines": {
+      "runs": 3,
+      "elapsed_ms": {
+        "mean": 795.1425136610245,
+        "min": 721.0599160171114,
+        "max": 918.6484160018153,
+        "stdev": 107.66754904297606
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    }
+  },
+  "performance_targets": {
+    "TTFC_ms": {
+      "target": 60,
+      "unit": "ms"
+    },
+    "RTF": {
+      "target": 0.15,
+      "unit": "ratio"
+    }
+  }
+}

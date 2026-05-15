@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-05-15T09:44:31.638641",
+  "url": "http://localhost:8000",
+  "text_sizes": [
+    100,
+    250
+  ],
+  "runs_per_size": 2,
+  "total_runs": 4,
+  "by_size": {
+    "100_lines": {
+      "runs": 2,
+      "elapsed_ms": {
+        "mean": 0.3801874700002372,
+        "min": 0.3346249577589333,
+        "max": 0.42574998224154115,
+        "stdev": 0.06443512274744218
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "250_lines": {
+      "runs": 2,
+      "elapsed_ms": {
+        "mean": 0.5558960256166756,
+        "min": 0.5145830218680203,
+        "max": 0.5972090293653309,
+        "stdev": 0.05842541020371887
+      },
+      "ttfc_ms": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "RTF": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "decode_tokens_per_sec": {
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "chunk_count": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    }
+  },
+  "performance_targets": {
+    "TTFC_ms": {
+      "target": 60,
+      "unit": "ms"
+    },
+    "RTF": {
+      "target": 0.15,
+      "unit": "ratio"
+    }
+  }
+}

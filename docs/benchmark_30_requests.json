@@ -1,0 +1,360 @@
+{
+  "url": "https://collectibles-wrapped-studied-hazards.trycloudflare.com",
+  "text": "thousand tokens per second validation run",
+  "insecure": true,
+  "summary": {
+    "runs": 30,
+    "elapsed_ms": {
+      "mean": 512.3248528281692,
+      "min": 292.7722499589436,
+      "max": 1496.7320000287145
+    },
+    "ttfc_ms": {
+      "mean": 339.2059514376645,
+      "min": 256.8797080311924,
+      "max": 983.3400420029648
+    },
+    "RTF": {
+      "mean": 0.002311885440617465,
+      "min": 0.0008105684929851735,
+      "max": 0.004300167208558388
+    },
+    "decode_tokens_per_sec": {
+      "mean": 13198.398473596282,
+      "min": 5963.155925766836,
+      "max": 32833.452700611335
+    }
+  },
+  "results": [
+    {
+      "run_id": 1,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 467.3789590015076,
+      "ttfc_ms": 348.9707919652574,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10524.5624721875,
+      "TTFC_ms": 0.017736107110977173,
+      "RTF": 0.0024348989212780855,
+      "avg_latency_ms": 9.021290577948093
+    },
+    {
+      "run_id": 2,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 498.03012498887256,
+      "ttfc_ms": 268.73616699595004,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 19048.922353527432,
+      "TTFC_ms": 0.023486092686653137,
+      "RTF": 0.001412613338299012,
+      "avg_latency_ms": 16.31063036620617
+    },
+    {
+      "run_id": 3,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 380.4225830244832,
+      "ttfc_ms": 277.91633299784735,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 6789.926329221416,
+      "TTFC_ms": 0.025958754122257233,
+      "RTF": 0.0037712997265076367,
+      "avg_latency_ms": 19.35497298836708
+    },
+    {
+      "run_id": 4,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 695.5518330214545,
+      "ttfc_ms": 256.8797080311924,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10267.589324324525,
+      "TTFC_ms": 0.01723598688840866,
+      "RTF": 0.0024957263193438562,
+      "avg_latency_ms": 9.29083488881588
+    },
+    {
+      "run_id": 5,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 509.59595799213275,
+      "ttfc_ms": 339.188042038586,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10533.28435947824,
+      "TTFC_ms": 0.017415732145309448,
+      "RTF": 0.0024434312487418733,
+      "avg_latency_ms": 9.198497049510479
+    },
+    {
+      "run_id": 6,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 480.39566702209413,
+      "ttfc_ms": 322.9680000222288,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 7959.915423066703,
+      "TTFC_ms": 0.026049092411994934,
+      "RTF": 0.003252908576991451,
+      "avg_latency_ms": 16.554315574467182
+    },
+    {
+      "run_id": 7,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 375.9837920079008,
+      "ttfc_ms": 288.6711670435034,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 20568.07681616623,
+      "TTFC_ms": 0.016864389181137085,
+      "RTF": 0.0012632006821170281,
+      "avg_latency_ms": 10.610688477754593
+    },
+    {
+      "run_id": 8,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 408.884999982547,
+      "ttfc_ms": 282.50879200641066,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 17468.84581907751,
+      "TTFC_ms": 0.018357299268245697,
+      "RTF": 0.001499083238455017,
+      "avg_latency_ms": 11.836889199912548
+    },
+    {
+      "run_id": 9,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 695.2341659925878,
+      "ttfc_ms": 271.4377499651164,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10031.671220897551,
+      "TTFC_ms": 0.0250181183218956,
+      "RTF": 0.002575964991296275,
+      "avg_latency_ms": 13.139056041836739
+    },
+    {
+      "run_id": 10,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 396.98595798108727,
+      "ttfc_ms": 345.6079160096124,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 13480.969233791047,
+      "TTFC_ms": 0.017927028238773346,
+      "RTF": 0.0019169300062100538,
+      "avg_latency_ms": 12.324292212724686
+    },
+    {
+      "run_id": 11,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 471.60033404361457,
+      "ttfc_ms": 331.3682500156574,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 16468.71072978225,
+      "TTFC_ms": 0.01715589314699173,
+      "RTF": 0.00156892981547653,
+      "avg_latency_ms": 11.85792125761509
+    },
+    {
+      "run_id": 12,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 1036.1162499757484,
+      "ttfc_ms": 983.3400420029648,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 20018.495389004456,
+      "TTFC_ms": 0.01845788210630417,
+      "RTF": 0.0013273308744256415,
+      "avg_latency_ms": 11.740424670279026
+    },
+    {
+      "run_id": 13,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 532.7449580072425,
+      "ttfc_ms": 381.0993750230409,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 16682.784488634126,
+      "TTFC_ms": 0.018428079783916473,
+      "RTF": 0.0015540140042646546,
+      "avg_latency_ms": 11.617139913141727
+    },
+    {
+      "run_id": 14,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 416.48700000951067,
+      "ttfc_ms": 268.83687503868714,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 13687.698160285707,
+      "TTFC_ms": 0.01756567507982254,
+      "RTF": 0.001913019497826528,
+      "avg_latency_ms": 18.150493502616882
+    },
+    {
+      "run_id": 15,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 690.9146250109188,
+      "ttfc_ms": 276.7232080223039,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 8652.944952569278,
+      "TTFC_ms": 0.02342555671930313,
+      "RTF": 0.003002968543533529,
+      "avg_latency_ms": 23.62910285592079
+    },
+    {
+      "run_id": 16,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 334.5260839560069,
+      "ttfc_ms": 269.21208400744945,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 24706.868187103522,
+      "TTFC_ms": 0.01778639853000641,
+      "RTF": 0.0010625341530428843,
+      "avg_latency_ms": 23.0741985142231
+    },
+    {
+      "run_id": 17,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 692.0828340225853,
+      "ttfc_ms": 284.0988340321928,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 6734.58934842757,
+      "TTFC_ms": 0.02564862370491028,
+      "RTF": 0.0038474110174882277,
+      "avg_latency_ms": 18.052115105092525
+    },
+    {
+      "run_id": 18,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 404.68341595260426,
+      "ttfc_ms": 386.6157079464756,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 15900.041620542279,
+      "TTFC_ms": 0.025277957320213318,
+      "RTF": 0.001644796503477552,
+      "avg_latency_ms": 15.427953563630581
+    },
+    {
+      "run_id": 19,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 321.1366669856943,
+      "ttfc_ms": 284.22191698336974,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 6007.134715874273,
+      "TTFC_ms": 0.027019530534744263,
+      "RTF": 0.004278657319589277,
+      "avg_latency_ms": 16.50859694927931
+    },
+    {
+      "run_id": 20,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 320.7373750046827,
+      "ttfc_ms": 267.29041599901393,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 11458.928393054404,
+      "TTFC_ms": 0.0260891392827034,
+      "RTF": 0.0022579813794641013,
+      "avg_latency_ms": 10.832961648702621
+    },
+    {
+      "run_id": 21,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 389.9805000401102,
+      "ttfc_ms": 264.49087500805035,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10471.983705463863,
+      "TTFC_ms": 0.01715589314699173,
+      "RTF": 0.0024666939077250074,
+      "avg_latency_ms": 9.091236628592014
+    },
+    {
+      "run_id": 22,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 292.7722499589436,
+      "ttfc_ms": 267.5356669933535,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10087.275407079658,
+      "TTFC_ms": 0.016915611922740936,
+      "RTF": 0.0025402343821492087,
+      "avg_latency_ms": 9.387419559061527
+    },
+    {
+      "run_id": 23,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 1496.7320000287145,
+      "ttfc_ms": 896.9427080010064,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 12500.929989602044,
+      "TTFC_ms": 0.024617649614810944,
+      "RTF": 0.0020561867990018276,
+      "avg_latency_ms": 11.531942524015903
+    },
+    {
+      "run_id": 24,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 546.2379169766791,
+      "ttfc_ms": 281.1830000136979,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 14173.678574089578,
+      "TTFC_ms": 0.01756567507982254,
+      "RTF": 0.0018217954052130827,
+      "avg_latency_ms": 7.9742372035980225
+    },
+    {
+      "run_id": 25,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 326.3017500285059,
+      "ttfc_ms": 274.455166014377,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 32833.452700611335,
+      "TTFC_ms": 0.017726793885231018,
+      "RTF": 0.0008105684929851735,
+      "avg_latency_ms": 17.58406311273575
+    },
+    {
+      "run_id": 26,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 480.92070798156783,
+      "ttfc_ms": 325.1184170367196,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 8497.484976780619,
+      "TTFC_ms": 0.02517830580472946,
+      "RTF": 0.0030254573676358446,
+      "avg_latency_ms": 11.225983500480652
+    },
+    {
+      "run_id": 27,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 546.015957952477,
+      "ttfc_ms": 270.7412499585189,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 12274.316816262795,
+      "TTFC_ms": 0.023365020751953125,
+      "RTF": 0.00213633260030425,
+      "avg_latency_ms": 15.490196645259857
+    },
+    {
+      "run_id": 28,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 387.66333396779373,
+      "ttfc_ms": 273.18408398423344,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 11680.812578567698,
+      "TTFC_ms": 0.01889839768409729,
+      "RTF": 0.0022110793467485504,
+      "avg_latency_ms": 8.143001236021519
+    },
+    {
+      "run_id": 29,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 300.85487494943663,
+      "ttfc_ms": 267.31462497264147,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 5963.155925766836,
+      "TTFC_ms": 0.02485699951648712,
+      "RTF": 0.004300167208558388,
+      "avg_latency_ms": 16.55714027583599
+    },
+    {
+      "run_id": 30,
+      "text": "thousand tokens per second validation run",
+      "elapsed_ms": 472.7727089775726,
+      "ttfc_ms": 319.52137500047684,
+      "total_pcm_bytes": 170880,
+      "decode_tokens_per_sec": 10476.904196648016,
+      "TTFC_ms": 0.01745671033859253,
+      "RTF": 0.0024643475503733987,
+      "avg_latency_ms": 9.056603536009789
+    }
+  ]
+}
