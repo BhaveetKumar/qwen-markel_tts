@@ -191,11 +191,14 @@ class TalkerDecoder:
 
         q: queue.Queue = queue.Queue()
         _SENTINEL = object()
+        _ERROR = object()
 
         def _worker():
             try:
                 for chunk in self.stream_audio(prompt_token_ids):
                     q.put(chunk)
+            except Exception as exc:
+                q.put((_ERROR, exc))
             finally:
                 q.put(_SENTINEL)
 
@@ -206,6 +209,8 @@ class TalkerDecoder:
             chunk = await loop.run_in_executor(None, q.get)
             if chunk is _SENTINEL:
                 break
+            if isinstance(chunk, tuple) and len(chunk) == 2 and chunk[0] is _ERROR:
+                raise chunk[1]
             yield chunk
 
     # ------------------------------------------------------------------
