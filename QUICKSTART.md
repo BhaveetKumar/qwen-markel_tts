@@ -17,17 +17,57 @@ pytest tests/ -v
 
 Should see: **30+ tests passing**
 
-## 3. Run Server (1 min)
+## 3. Configure Secrets (1 min)
+
+Create a `.env` file with your API keys (required for all demos):
 
 ```bash
+cp .env.example .env
+# Edit .env and add:
+# - DEEPGRAM_API_KEY=your_key
+# - OPENAI_API_KEY=your_key
+# - HF_TOKEN=your_token
+```
+
+## 4. Run Demo (Choose One)
+
+### Option A: Native Pipecat Voice Pipeline (requires microphone/speaker)
+
+```bash
+# Start TTS server (Terminal 1)
 bash scripts/run_server.sh
+
+# Run voice pipeline (Terminal 2)
+python scripts/demo.py --tts-url http://localhost:8000
 ```
 
-In another terminal, check health:
+✅ Speak into your microphone → transcribed → LLM response → TTS playback
+
+### Option B: Browser-Based UI (recommended for macOS)
+
+Use the browser for microphone access (sidesteps OS-level permission issues):
 
 ```bash
-curl http://localhost:8000/health
+# Start TTS server (Terminal 1)
+bash scripts/run_server.sh
+
+# Run web server (Terminal 2)
+python scripts/web_demo.py --port 8080
 ```
+
+Then open: **http://localhost:8080** in your browser 🎙️
+
+**UI Preview:**
+
+![Qwen3-TTS Web Demo](Screenshot%202026-05-15%20at%202.19.53%20PM.png)
+
+## 5. Test (1 min)
+
+```bash
+pytest tests/ -v
+```
+
+Expected: **30+ tests passing**
 
 Response:
 ```json

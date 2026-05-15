@@ -10,22 +10,23 @@ Complete guide to all qwen-markel-tts documentation.
 ## Setup & Deployment
 
 3. **[SETUP.md](SETUP.md)** — Complete installation guide with troubleshooting
-4. **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment (cloud, Docker, Kubernetes)
+4. **[WEB_UI.md](WEB_UI.md)** — Browser-based UI guide (recommended for macOS)
+5. **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment (cloud, Docker, Kubernetes)
 
 ## Technical Reference
 
-5. **[API.md](API.md)** — HTTP API endpoints, request/response formats, examples
-6. **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design, data flow, performance breakdown
+6. **[API.md](API.md)** — HTTP API endpoints, request/response formats, examples
+7. **[ARCHITECTURE.md](ARCHITECTURE.md)** — System design, data flow, performance breakdown
 
 ## Submission & Analysis
 
-7. **[SUBMISSION.md](SUBMISSION.md)** — What was delivered, what wasn't, how to evaluate
-8. **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — Kernel integration analysis vs original qwen_megakernel
-9. **[docs/implementation_audit_2026-05-15.md](docs/implementation_audit_2026-05-15.md)** — Requirement-by-requirement audit vs context.md
+8. **[SUBMISSION.md](SUBMISSION.md)** — What was delivered, what wasn't, how to evaluate
+9. **[docs/KERNEL_CHANGES.md](docs/KERNEL_CHANGES.md)** — Kernel integration analysis vs original qwen_megakernel
+10. **[docs/implementation_audit_2026-05-15.md](docs/implementation_audit_2026-05-15.md)** — Requirement-by-requirement audit vs context.md
 
 ## Data & Benchmarks
 
-10. **[docs/benchmark_30_requests.json](docs/benchmark_30_requests.json)** — Raw benchmark data (30 runs, 96 tokens each)
+11. **[docs/benchmark_30_requests.json](docs/benchmark_30_requests.json)** — Raw benchmark data (30 runs, 96 tokens each)
 
 ---
 
@@ -40,8 +41,8 @@ Complete guide to all qwen-markel-tts documentation.
 ### "I want to deploy to production"
 → Read [DEPLOYMENT.md](DEPLOYMENT.md)
 
-### "I want to understand the API"
-→ Read [API.md](API.md)
+### "I want to use the browser-based UI"
+→ Read [WEB_UI.md](WEB_UI.md) (see [screenshot](Screenshot%202026-05-15%20at%202.19.53%20PM.png))
 
 ### "I want to understand the system design"
 → Read [ARCHITECTURE.md](ARCHITECTURE.md)
