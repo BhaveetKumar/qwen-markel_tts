@@ -46,7 +46,7 @@ class TalkerWeights:
 # ---------------------------------------------------------------------------
 
 def load_talker_weights(
-    model_name: str = "Qwen/Qwen3-TTS",
+    model_name: str = "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
     *,
     device: str = "cuda",
     verbose: bool = True,
