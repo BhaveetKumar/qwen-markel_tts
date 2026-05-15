@@ -158,16 +158,36 @@ def _load_via_qwen_tts_package(model_name, device, dtype, verbose):
 
 def _load_via_automodel(model_name, device, dtype, verbose):
     """Generic HuggingFace AutoModel fallback."""
-    from transformers import AutoModel, AutoProcessor  # type: ignore
+    from transformers import (  # type: ignore
+        AutoModel,
+        AutoModelForCausalLM,
+        AutoProcessor,
+    )
 
     token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_HUB_TOKEN")
 
-    model = AutoModel.from_pretrained(
-        model_name,
-        torch_dtype=dtype,
-        device_map=device,
-        token=token,
-    )
+    # Qwen3-TTS may register custom classes; allow remote/custom code paths.
+    common_kwargs = {
+        "torch_dtype": dtype,
+        "device_map": device,
+        "token": token,
+        "trust_remote_code": True,
+    }
+
+    model = None
+    last_exc = None
+    for cls in (AutoModel, AutoModelForCausalLM):
+        try:
+            model = cls.from_pretrained(model_name, **common_kwargs)
+            break
+        except Exception as exc:
+            last_exc = exc
+
+    if model is None:
+        raise RuntimeError(
+            f"Failed to load model via AutoModel classes for {model_name}: {last_exc}"
+        )
+
     processor = AutoProcessor.from_pretrained(model_name, token=token)
     talker = getattr(model, "talker", model)
     state = talker.state_dict()
