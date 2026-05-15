@@ -132,12 +132,55 @@ def _find_qwen_tts_root() -> Optional[str]:
     return None
 
 
+def _is_model_checkpoint_dir(path: str) -> bool:
+    """A Transformers-loadable model directory must include a top-level config.json."""
+    return os.path.isfile(os.path.join(path, "config.json"))
+
+
+def _find_local_model_candidates() -> list[str]:
+    """Find local model checkpoint directories (not source-code repos)."""
+    candidates = []
+
+    # Explicit override first.
+    explicit = os.getenv("QWEN_TTS_LOCAL_MODEL_DIR")
+    if explicit:
+        p = os.path.abspath(explicit)
+        if os.path.isdir(p) and _is_model_checkpoint_dir(p):
+            candidates.append(p)
+
+    roots = [
+        os.path.abspath(os.path.join(os.getcwd(), "Qwen3-TTS")),
+        "/root/workspace/Qwen3-TTS",
+        "/root/workspace/Qwen3-TTS-model",
+    ]
+
+    for root in roots:
+        if not os.path.isdir(root):
+            continue
+
+        # Root itself might be a model checkpoint.
+        if _is_model_checkpoint_dir(root) and root not in candidates:
+            candidates.append(root)
+
+        # Also consider one-level nested checkpoints (e.g. snapshots/checkpoint dirs).
+        try:
+            for child in os.listdir(root):
+                child_path = os.path.join(root, child)
+                if os.path.isdir(child_path) and _is_model_checkpoint_dir(child_path):
+                    if child_path not in candidates:
+                        candidates.append(child_path)
+        except OSError:
+            continue
+
+    return candidates
+
+
 def _candidate_model_names(model_name: str) -> list[str]:
-    """Return ordered model source candidates (hub id first, then local clone path)."""
+    """Return ordered model source candidates (hub id first, then local checkpoints)."""
     candidates = [model_name]
-    local_root = _find_qwen_tts_root()
-    if local_root and local_root not in candidates:
-        candidates.append(local_root)
+    for local_dir in _find_local_model_candidates():
+        if local_dir not in candidates:
+            candidates.append(local_dir)
     return candidates
 
 
