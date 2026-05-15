@@ -91,7 +91,11 @@ async def _lifespan(app: FastAPI):
         from qwen3_tts.loader import load_talker_weights
         from qwen3_tts.decoder import TalkerDecoder
 
-        weights, tokenizer = load_talker_weights(model_name, verbose=True)
+        weights, tokenizer = load_talker_weights(
+            model_name,
+            verbose=True,
+            use_hf_fallback=False,
+        )
         _state.decoder = TalkerDecoder(weights, tokenizer)
         _state.tokenizer = tokenizer
         logger.info("Model loaded successfully.")
