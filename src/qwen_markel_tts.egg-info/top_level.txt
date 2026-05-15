@@ -1,0 +1,4 @@
+megakernel
+pipecat_adapter
+qwen3_tts
+server
